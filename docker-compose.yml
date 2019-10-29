@@ -70,6 +70,13 @@ services:
         ipv4_address: 172.16.50.6
       cert:
         ipv4_address: 172.16.52.2 
+    environment:
+      - ORGANIZATION=${ORGANIZATION}
+      - COUNTRY_CODE=${COUNTRY_CODE}
+      - PROVINCE=${PROVINCE}
+      - CITY=${CITY}
+      - ADDRESS=${ADDRESS}
+      - POSTAL_CODE=${POSTAL_CODE}
     volumes:
       - ./data/cert_manager/:/opt/data/    
 volumes:
