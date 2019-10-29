@@ -40,7 +40,7 @@ services:
     restart: always
     networks:
       backend:
-        ipv4_address: 172.16.50.10
+        ipv4_address: 172.16.50.4
       middle:
         ipv4_address: 172.16.51.3
     volumes:
@@ -50,7 +50,7 @@ services:
     restart: always
     networks:
       backend:
-        ipv4_address: 172.16.50.11
+        ipv4_address: 172.16.50.5
       middle:
         ipv4_address: 172.16.51.4
       cert:
@@ -67,7 +67,7 @@ services:
     restart: always
     networks:
       backend:
-        ipv4_address: 172.16.50.12
+        ipv4_address: 172.16.50.6
       cert:
         ipv4_address: 172.16.52.2 
     volumes:
