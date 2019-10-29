@@ -1,0 +1,96 @@
+version: '3'
+services:
+  caddy:
+    image: harbor.ittim-online.com/iptv/http_server:develop
+    restart: always
+    environment:
+      - EMAIL=${EMAIL}
+    networks:
+      middle:
+        ipv4_address: 172.16.51.2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddyFile:/opt/caddyFile
+      - ./data/web/certs:/root/.caddy/acme
+
+  influxdb:
+    image: influxdb
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.16.50.3
+    volumes:
+      - ./data/influxdb/:/var/lib/influxdb/
+      
+  redis:
+    image: redis
+    command: redis-server --appendonly yes
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.16.50.2
+    volumes:
+      - ./data/redis/:/data/
+
+  WebAPI:
+    image: harbor.ittim-online.com/iptv/web_api:develop
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.16.50.10
+      middle:
+        ipv4_address: 172.16.51.3
+    volumes:
+      - caddySecret:/opt/caddySecret/
+  WorkerAPI:
+    image: harbor.ittim-online.com/iptv/worker_api:develop
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.16.50.11
+      middle:
+        ipv4_address: 172.16.51.4
+      cert:
+        ipv4_address: 172.16.52.3  
+    environment:
+      - DOMAIN=${DOMAIN}    
+    ports:
+      - "8002:8002"  
+    volumes:
+      - ./data/worker_api/:/opt/data/   
+      
+  CertManager:
+    image: harbor.ittim-online.com/iptv/cert_manager:develop
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.16.50.12
+      cert:
+        ipv4_address: 172.16.52.2 
+    volumes:
+      - ./data/cert_manager/:/opt/data/    
+volumes:
+  caddySecret: {}
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.50.0/29
+
+  middle:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.51.0/29
+  cert:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.52.0/29      
