@@ -1,0 +1,23 @@
+DOMAIN {
+        root /opt/dist
+        proxy /api/v1 172.16.51.3:8000 {
+            transparent
+        }
+        proxy /api/worker/v1 172.16.51.4:8001 {
+            transparent
+        }
+        jwt {
+           path /
+           except /login
+           except /api
+           redirect /login.html
+           token_source cookie JWT
+           secret /opt/caddySecret/secret.txt
+        }
+        gzip
+        log ./access.log
+        ext .html
+        errors error.log {       # Error log
+            404 404.html   # Custom error page
+        }
+}
